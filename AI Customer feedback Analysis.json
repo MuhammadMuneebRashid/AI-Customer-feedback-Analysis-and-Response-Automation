@@ -1,0 +1,695 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8f164b9b-973c-4581-8538-e17e9317e3be",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2164bf3d-5a14-46f7-a08f-5b94e4d47264",
+      "name": "Webhook",
+      "webhookId": "8f164b9b-973c-4581-8538-e17e9317e3be"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fields=$input.first().json.body.data.fields;\nconst f1=fields.find(f=>f.label===\"Customer Name:\");\nconst name=f1.value;\nconst f2=fields.find(f=>f.label===\"Email:\");\nconst email=f2.value;\nconst f3=fields.find(f=>f.label===\"Feedback:\");\nconst feedback=f3.value;\n    const f4=fields.find(f=>f.label===\"Order ID\");\nconst ID=f4.value;\nconst f5=fields.find(f=>f.label===\"Rating\");\nconst value=f5.value[0];\nconst options=f5.options.find(o=>o.id===value);\nconst rating=options.text;\n\nreturn[{\n  name,\n  email,\n  feedback,\n  ID,\n  rating\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f46cfec4-ca34-4939-af6f-1db4436ed189",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=you are an assistant \nemail{{ $json.email }}  name{{ $json.name }}feedback{{ $json.feedback }}ID{{ $json.ID }}\nrating{{ $json.rating }}\nyou need to identify all the infomation\n and check which kind of feedback it is its a sentiment , complaint also tell priority and write a professional summary OF IT DONT WRITE EXTRA THINGS IN IT ",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "c0091f8a-ce4d-4900-8ce5-c34be44a3965",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        208
+      ],
+      "id": "bf36a142-8846-4db0-b650-94f3916b0ad2",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "t02EhobJ0BR1Zjz1",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"name\":\"\",\n  \"email\":\"\",\n  \"feedback\":\"\",\n  \"ID\":\"\",\n  \"rating\":\"\",\n  \"priority\":\"\",\n  \"kind of feedback\":\"\",\n  \"summary\":\"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        208
+      ],
+      "id": "58ca7d94-2ba5-4af5-8aa0-61f0dd38b155",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b75ec02-164b-4b7d-9d76-9e007dbb41be",
+              "name": "name",
+              "value": "={{ $json.output.name }}",
+              "type": "string"
+            },
+            {
+              "id": "11e67f9e-fa99-4997-bd71-00f422152511",
+              "name": "email",
+              "value": "={{ $json.output.email }}",
+              "type": "string"
+            },
+            {
+              "id": "6149c970-28b7-47ee-8d20-9f7d48a41f67",
+              "name": "feedback",
+              "value": "={{ $json.output.feedback }}",
+              "type": "string"
+            },
+            {
+              "id": "7ee6295f-64a7-4517-9508-19240f459a31",
+              "name": "ID",
+              "value": "={{ $json.output.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "65063800-acce-4755-87c1-606ac2811696",
+              "name": "rating",
+              "value": "={{ $json.output.rating }}",
+              "type": "string"
+            },
+            {
+              "id": "8ed4e0ec-4aa5-4e72-b809-4222428382ad",
+              "name": "priority",
+              "value": "={{ $json.output.priority }}",
+              "type": "string"
+            },
+            {
+              "id": "8a1b5a29-c622-4e0e-a10c-c77875c946cb",
+              "name": "kind of feedback",
+              "value": "={{ $json.output['kind of feedback'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5ce79519-3b6f-4741-9016-945e4d4d3cfe",
+              "name": "summary",
+              "value": "={{ $json.output.summary }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        816,
+        0
+      ],
+      "id": "4fe74200-f626-4b5e-a735-e3920cad5906",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JsWo4HG5rSdPxYXYN7c4RP9P8EAq9458S9dcC5c7xxY",
+          "mode": "list",
+          "cachedResultName": "leave",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JsWo4HG5rSdPxYXYN7c4RP9P8EAq9458S9dcC5c7xxY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JsWo4HG5rSdPxYXYN7c4RP9P8EAq9458S9dcC5c7xxY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "leave_type",
+              "displayName": "leave_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "start_date",
+              "displayName": "start_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "end_date",
+              "displayName": "end_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "leave_days",
+              "displayName": "leave_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "isValid",
+              "displayName": "isValid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "feedback",
+              "displayName": "feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rating",
+              "displayName": "rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "kind of feedback",
+              "displayName": "kind of feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "979f4d0e-4b33-4d45-8dc3-6975e80c1f2c",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "48nlxbnIeWAd3sYF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0850ccf5-e09d-40fc-9f3a-b11c67133741",
+              "leftValue": "={{ $json.priority }}",
+              "rightValue": "=High",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "2122c476-5c67-44e5-bd9e-f299af8c35a7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=write an alert response message with subject {{ $json.name }}{{ $json.email }}{{ $json.ID }}{{ $json.feedback }}\n{{ $json.rating }}{{ $json.priority }}{{ $json['kind of feedback'] }}{{ $json.summary }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1488,
+        -224
+      ],
+      "id": "846135fd-3639-4eeb-9c30-14d661a97f94",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.name }}{{ $json.email }}{{ $json.feedback }}{{ $json.ID }}{{ $json.rating }}{{ $json['kind of feedback'] }}{{ $json.summary }}{{ $json.priority }} write a normal response",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1616,
+        160
+      ],
+      "id": "cd0e6090-9457-4477-bf6d-0438c1c17305",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1536,
+        368
+      ],
+      "id": "c0d00675-56cf-4986-b4f5-fd7478b16225",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "t02EhobJ0BR1Zjz1",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"subject\":\"\",\n  \"response\":\"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1840,
+        384
+      ],
+      "id": "17bbd465-71f7-4b49-8137-da6e2a543b82",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('If').item.json.email }}",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output.response }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1968,
+        144
+      ],
+      "id": "e294f103-1cf5-441a-9ef4-11414d9a5e91",
+      "name": "Send a message",
+      "webhookId": "317b9943-c6d9-46ee-a0ca-7de416339fb2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yvxh9dKBPm1eQRl8",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        -16
+      ],
+      "id": "4a4eb0f8-2435-4ded-a7e8-63cc0ad5983e",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "t02EhobJ0BR1Zjz1",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"subject\":\"\",\n  \"response\":\"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "4f5347e0-da35-46c1-a018-64678df22e9d",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "sendTo": "muneeb999@gmail.com",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output.response }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1872,
+        -224
+      ],
+      "id": "6b7fad19-829f-4969-af2a-37b4aed220f7",
+      "name": "Send a message1",
+      "webhookId": "37141d2e-1531-4a5a-84d2-4d0f1e908fa7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yvxh9dKBPm1eQRl8",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e82a1787-48e8-4888-9c7d-d1ab26980d27",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7312f4fb849b1bed59886309e189740109b43cea4de502fb29bbdbb59d551cd3"
+  },
+  "nodeGroups": [],
+  "id": "9jcGEQzPmWnNUQku",
+  "tags": []
+}
