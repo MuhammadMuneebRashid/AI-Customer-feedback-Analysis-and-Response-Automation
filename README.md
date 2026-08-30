@@ -172,3 +172,6 @@ Possible improvements include:
 Built as a practical demonstration of combining **AI with workflow automation** to create an intelligent customer-support system.
 
 **n8n + AI + Automation = Smarter Customer Feedback Management**
+
+<img width="1920" height="1080" alt="feedback" src="https://github.com/user-attachments/assets/5fdff7fb-eaa7-4916-9cbf-3a5a4abaa1ee" />
+
