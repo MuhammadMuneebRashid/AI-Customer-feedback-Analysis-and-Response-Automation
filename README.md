@@ -236,5 +236,7 @@ The goal of this project is to demonstrate how **AI + workflow automation** can 
 ⭐ If you find this project useful, consider giving the repository a star!
 
 
-<img width="1920" height="1080" alt="feedback" src="https://github.com/user-attachments/assets/5fdff7fb-eaa7-4916-9cbf-3a5a4abaa1ee" />
+<img width="1920" height="899" alt="542890" src="https://github.com/user-attachments/assets/46bb9c33-a03b-4a99-95c7-992d25f27fb3" />
+<img width="1920" height="906" alt="567890" src="https://github.com/user-attachments/assets/4ab3727e-24e3-496b-b7ed-adf1ea49572c" />
+
 
