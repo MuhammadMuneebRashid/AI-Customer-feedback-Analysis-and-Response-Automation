@@ -1,177 +1,240 @@
 # 🤖 AI Customer Feedback Analysis & Response Automation
 
-An AI-powered **Customer Feedback Analysis and Response Automation** workflow built with **n8n**. The system collects customer feedback, analyzes it using **Google Gemini**, classifies the feedback, determines its priority, stores the results in **Google Sheets**, and automatically sends an appropriate email response.
+An AI-powered **n8n automation workflow** that collects customer feedback, analyzes it using Google Gemini, detects repeated complaints, stores feedback in Google Sheets, and automatically sends professional email responses to customers and internal teams.
 
 ## 🚀 Overview
 
-This automation is designed to reduce manual customer-support work by automatically processing customer feedback from submission to response.
+This workflow automates the complete customer feedback handling process.
 
-Customers provide:
+When a customer submits feedback through a form, the workflow:
 
-* Customer Name
-* Email
-* Feedback
-* Order ID
-* Rating
+1. Receives the feedback through an **n8n Webhook**.
+2. Extracts customer information such as name, email, order ID, feedback, and rating.
+3. Uses **Google Gemini AI** to analyze the feedback.
+4. Classifies the feedback type and generates a professional summary.
+5. Checks previous feedback stored in **Google Sheets**.
+6. Detects whether the complaint is repeated.
+7. Stores the processed feedback and status in Google Sheets.
+8. Sends an internal alert for repeated complaints.
+9. Generates a professional customer response using AI.
+10. Automatically sends the response to the customer via Gmail.
 
-The workflow extracts this information from a webhook submission and sends it to an AI agent for analysis.
+## ✨ Key Features
+
+* 🔗 Webhook-based feedback collection
+* 🤖 AI-powered feedback analysis
+* ⭐ Customer rating processing
+* 🏷️ Automatic feedback type classification
+* 📝 AI-generated professional summaries
+* 🔍 Repeated complaint detection
+* 📊 Google Sheets data storage
+* 🚨 Internal alerts for repeated complaints
+* 📧 Automated customer email responses
+* ✉️ AI-generated email subjects and messages
+* 📦 Structured AI output using JSON schema
 
 ## 🔄 Workflow
 
 ```text
 Customer Feedback Form
         ↓
-      Webhook
+     Webhook
         ↓
- JavaScript Data Extraction
+Extract Customer Data
         ↓
-    Google Gemini AI
+   Google Gemini AI
         ↓
-Feedback Classification
+Feedback Analysis
         ↓
-Priority Detection
+   Google Sheets
         ↓
-    Google Sheets
+Repeated Complaint Check
         ↓
-   Priority Check
-      ↙       ↘
-   High      Normal
-    ↓          ↓
-Alert Email  Normal Response
+      IF Node
+     ↙       ↘
+Repeated      New
+Complaint    Complaint
+   ↓             ↓
+Team Alert    Customer Reply
+   ↓             ↓
+Google Sheets ← Google Sheets
+        ↓
+      Gmail
 ```
 
-## ✨ Key Features
+## 🧠 AI Processing
 
-* 📩 Receives customer feedback through a webhook
-* 🔍 Extracts customer and order information automatically
-* ⭐ Processes customer ratings
-* 🤖 Uses Google Gemini for AI-powered analysis
-* 💬 Identifies the type of feedback
-* 📊 Determines feedback priority
-* 📝 Generates a professional summary
-* 📋 Stores analyzed feedback in Google Sheets
-* 🚨 Sends an alert for high-priority feedback
-* 📧 Automatically responds to customers through Gmail
+Google Gemini is used to analyze the submitted feedback and generate structured information:
 
-The AI output is structured into fields including **name, email, feedback, order ID, rating, priority, kind of feedback, and summary**.
+```json
+{
+  "name": "",
+  "email": "",
+  "order_id": "",
+  "feedback": "",
+  "rating": "",
+  "feedback_type": "",
+  "summary": ""
+}
+```
 
-## 🧠 AI Analysis
+The AI identifies the **feedback type** and creates a concise professional summary that can be used by the support team.
 
-Google Gemini analyzes the submitted feedback and identifies:
+## 🔍 Repeated Complaint Detection
 
-* Customer information
-* Feedback content
+The workflow compares the new feedback with previously stored feedback in Google Sheets.
+
+If matching feedback is found:
+
+```text
+Status: Repeated Complaint
+isRepeated: true
+```
+
+Otherwise:
+
+```text
+Status: New Complaint
+isRepeated: false
+```
+
+The workflow also records the number of previous matches using:
+
+```text
+previousMatches
+```
+
+## 📧 Automated Email Handling
+
+### For Repeated Complaints
+
+The workflow generates:
+
+* Internal alert subject
+* Internal alert message
+* Customer email subject
+* Customer response
+
+The internal team receives an alert so repeated customer issues can receive additional attention.
+
+### For New Complaints
+
+The workflow generates a professional customer reply based on:
+
+* Customer feedback
 * Rating
-* Type of feedback
-* Priority
-* Professional summary
-
-The workflow then uses the detected priority to decide which response path should be executed.
-
-## 📊 Data Storage
-
-Analyzed feedback is stored in **Google Sheets** for centralized record keeping and future review.
-
-The stored information includes:
-
-* Name
-* Email
-* Feedback
+* Feedback type
+* AI-generated summary
 * Order ID
-* Rating
-* Priority
-* Kind of feedback
-* Summary
 
-## 📧 Automated Email Responses
-
-The workflow has two response paths:
-
-### 🚨 High-Priority Feedback
-
-When feedback is classified as **High priority**, the workflow generates an alert response and sends it to the configured notification email.
-
-### 💬 Normal Feedback
-
-For feedback that does not have high priority, the workflow generates a normal professional response and sends it directly to the customer.
+The response is then automatically sent through Gmail.
 
 ## 🛠️ Technologies Used
 
 * **n8n** — Workflow automation
-* **Google Gemini** — AI-powered feedback analysis
-* **JavaScript** — Data extraction and processing
-* **Google Sheets** — Feedback storage
+* **Google Gemini** — AI-powered analysis and response generation
+* **Google Sheets** — Feedback storage and historical comparison
 * **Gmail** — Automated email communication
-* **Tally Forms / Webhook** — Feedback collection
+* **JavaScript** — Data extraction and complaint detection
+* **Webhook** — Form-to-workflow data integration
 
-## 🎯 Benefits
+## 📋 Data Fields
 
-This automation can help businesses:
+| Field             | Description                                  |
+| ----------------- | -------------------------------------------- |
+| `name`            | Customer name                                |
+| `email`           | Customer email                               |
+| `order_id`        | Customer order ID                            |
+| `feedback`        | Submitted customer feedback                  |
+| `rating`          | Customer rating                              |
+| `feedback_type`   | AI-generated feedback category               |
+| `summary`         | AI-generated professional summary            |
+| `isRepeated`      | Indicates whether feedback is repeated       |
+| `previousMatches` | Number of previous matching feedback entries |
+| `status`          | New Complaint or Repeated Complaint          |
 
-* Reduce manual feedback processing
-* Respond to customers faster
-* Identify urgent complaints
-* Organize customer feedback
-* Maintain centralized feedback records
-* Improve customer-support workflows
-* Automate repetitive communication
+## ⚙️ Setup
 
-## 📌 Use Cases
+### 1. Import the Workflow
 
-This workflow can be adapted for:
+Import the provided JSON workflow into your n8n instance.
 
-* E-commerce businesses
-* Online stores
-* SaaS products
-* Customer support teams
-* Service businesses
-* Product review systems
-* Order management systems
+### 2. Configure Webhook
 
-## 🔧 Workflow Structure
+Connect your customer feedback form to the n8n webhook using a `POST` request.
 
-The main workflow consists of:
+### 3. Configure Google Gemini
 
-1. **Webhook** — Receives customer feedback.
-2. **JavaScript Code** — Extracts submitted form fields.
-3. **AI Agent** — Analyzes and classifies feedback.
-4. **Structured Output Parser** — Produces consistent AI output.
-5. **Edit Fields** — Organizes the analyzed data.
-6. **Google Sheets** — Stores the feedback analysis.
-7. **IF Node** — Checks the feedback priority.
-8. **AI Response Agent** — Generates the appropriate response.
-9. **Gmail** — Sends the automated email.
+Add your Google Gemini API credentials to the Gemini Chat Model nodes.
 
-The workflow connections implement this processing sequence from webhook through AI analysis, spreadsheet storage, priority routing, and email response.
+### 4. Configure Google Sheets
+
+Create a Google Sheet containing columns for:
+
+```text
+name
+email
+order_id
+feedback
+rating
+feedback_type
+summary
+isRepeated
+previousMatches
+status
+```
+
+Connect your Google Sheets credentials in n8n.
+
+### 5. Configure Gmail
+
+Connect your Gmail account to the Gmail nodes and configure the internal team recipient.
+
+### 6. Activate the Workflow
+
+After testing the workflow successfully, activate it and start receiving customer feedback automatically.
+
+## 🎯 Use Cases
+
+This automation can be used for:
+
+* E-commerce customer feedback
+* Product reviews
+* Customer support systems
+* Complaint management
+* Order-related feedback
+* Customer satisfaction analysis
+* Repeated issue detection
+* Automated customer service
+
+## 💡 Benefits
+
+* Reduces manual feedback processing
+* Saves customer support time
+* Identifies recurring complaints
+* Maintains organized feedback records
+* Provides faster customer responses
+* Uses AI to improve communication quality
+* Creates a consistent customer support process
 
 ## 🔐 Credentials
 
-Before running the workflow, configure your own credentials for:
+Before running the workflow, configure your own:
 
-* Google Gemini
-* Google Sheets
-* Gmail
+* Google Gemini API credentials
+* Google Sheets OAuth credentials
+* Gmail OAuth credentials
 
-**Do not commit personal credentials, API keys, or sensitive configuration to GitHub.**
+**Do not expose API keys, OAuth credentials, webhook secrets, or other sensitive information in a public repository.**
 
-## 📈 Future Improvements
+## 📌 Project Goal
 
-Possible improvements include:
+The goal of this project is to demonstrate how **AI + workflow automation** can transform customer feedback management from a manual process into an intelligent, automated support system.
 
-* Slack or Microsoft Teams alerts
-* Dashboard for feedback analytics
-* Sentiment scoring
-* Automatic ticket creation
-* CRM integration
-* Feedback trend analysis
-* Multi-language feedback analysis
-* Automatic escalation based on priority
+---
 
-## 👨‍💻 Project
+⭐ If you find this project useful, consider giving the repository a star!
 
-Built as a practical demonstration of combining **AI with workflow automation** to create an intelligent customer-support system.
-
-**n8n + AI + Automation = Smarter Customer Feedback Management**
 
 <img width="1920" height="1080" alt="feedback" src="https://github.com/user-attachments/assets/5fdff7fb-eaa7-4916-9cbf-3a5a4abaa1ee" />
 
